@@ -4,7 +4,7 @@ import agent
 import memory
 
 # 个人资产配置文件路径（存放在 Obsidian Knowledge-Base 中）
-ASSET_FILE = r"D:\AI-Agent-Workspace\Knowledge-Base\personal_resume_asset.md"
+ASSET_FILE = r"D:\AI-Agent-Workspace\Knowledge-Base\Personal_Resume_Asset.md"
 
 def load_asset_file():
     """从 Obsidian Knowledge-Base 自动加载个人资产配置"""
