@@ -1,6 +1,17 @@
 import streamlit as st
+import os
 import agent
 import memory
+
+# 个人资产配置文件路径（存放在 Obsidian Knowledge-Base 中）
+ASSET_FILE = r"D:\AI-Agent-Workspace\Knowledge-Base\personal_resume_asset.md"
+
+def load_asset_file():
+    """从 Obsidian Knowledge-Base 自动加载个人资产配置"""
+    if os.path.exists(ASSET_FILE):
+        with open(ASSET_FILE, 'r', encoding='utf-8') as f:
+            return f.read()
+    return ""
 
 st.set_page_config(page_title="智能简历调优系统 - Agentic Resume", layout="wide")
 
@@ -10,8 +21,19 @@ st.caption("带长期记忆 × 多维自动评测 × 中国招聘生态深度适
 # 侧边栏：配置基础信息
 with st.sidebar:
     st.header("⚙️ 个人资产配置")
-    base_resume = st.text_area("你的基础核心履历 (知识底库)", height=300, 
-                               placeholder="在这里粘贴你的真实简历经历，Agent 将基于此进行事实抽取，绝不瞎编。")
+    
+    # 自动加载 Obsidian 中的个人资产文件
+    loaded_asset = load_asset_file()
+    if loaded_asset:
+        st.success("✅ 已从 Obsidian 自动加载个人资产")
+        with st.expander("📄 查看/编辑已加载的资产内容", expanded=False):
+            base_resume = st.text_area("个人核心履历底库", value=loaded_asset, height=400,
+                                       help="此内容来自 Knowledge-Base/personal_resume_asset.md，你可以直接在 Obsidian 中编辑它，刷新网页即可生效。")
+    else:
+        st.warning("⚠️ 未找到个人资产文件，请手动粘贴")
+        st.caption(f"或在 Obsidian 中创建：`{ASSET_FILE}`")
+        base_resume = st.text_area("你的基础核心履历 (知识底库)", height=300, 
+                                   placeholder="在这里粘贴你的真实简历经历，Agent 将基于此进行事实抽取，绝不瞎编。")
     
     st.markdown("---")
     st.header("📡 投递渠道")
