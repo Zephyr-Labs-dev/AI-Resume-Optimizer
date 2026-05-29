@@ -9,5 +9,6 @@ __pycache__/
 *.pyo
 *.pyd
 
-# 运行日志
+# 运行日志与历史记录
 *.log
+history/

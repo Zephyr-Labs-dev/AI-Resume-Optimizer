@@ -9,9 +9,8 @@ client = OpenAI(
     api_key=os.getenv("DEEPSEEK_API_KEY", "your-api-key"),
     base_url="https://token-plan-cn.xiaomimimo.com/v1"
 )
-MODEL_NAME = os.getenv("MIMO_MODEL_NAME", "default")
 
-def call_llm(system_prompt: str, user_prompt: str, json_mode: bool = False) -> str:
+def call_llm(system_prompt: str, user_prompt: str, model_name: str, json_mode: bool = False) -> str:
     """通用的 LLM 调用函数"""
     messages = [
         {"role": "system", "content": system_prompt},
@@ -21,14 +20,14 @@ def call_llm(system_prompt: str, user_prompt: str, json_mode: bool = False) -> s
     response_format = {"type": "json_object"} if json_mode else {"type": "text"}
     
     response = client.chat.completions.create(
-        model=MODEL_NAME,
+        model=model_name,
         messages=messages,
         response_format=response_format,
         temperature=0.3
     )
     return response.choices[0].message.content
 
-def analyze_jd_risk(jd_text: str, base_resume: str) -> str:
+def analyze_jd_risk(jd_text: str, base_resume: str, model_name: str) -> str:
     """分析 JD 的排雷指数，融合了 Jargon Translator 和 Risk Analyzer"""
     system_prompt = f"""
     你是一个极其死板、冷酷的 AI 互联网职场生存精算师与劳动法顾问。你的任务是接收原始岗位文本，并深度读取用户的真实履历资产。你需要执行冷酷的交叉比对，输出一针见血的排雷报告。
@@ -59,10 +58,10 @@ def analyze_jd_risk(jd_text: str, base_resume: str) -> str:
     *(最多3点，若无则输出：未检测到高危话术陷阱)*
     """
     
-    return call_llm(system_prompt, jd_text)
+    return call_llm(system_prompt, jd_text, model_name)
 
 
-def draft_resume(jd_text: str, base_resume: str, memory_context: str, channel: str = "both") -> str:
+def draft_resume(jd_text: str, base_resume: str, memory_context: str, channel: str = "both", model_name: str = "mimo-v2.5") -> str:
     """根据 JD、基础简历、用户偏好和投递渠道生成定制版简历"""
     
     # 根据渠道构建不同的输出策略
@@ -264,10 +263,10 @@ def draft_resume(jd_text: str, base_resume: str, memory_context: str, channel: s
     system_prompt += output_format
     
     user_prompt = f"【基础简历】:\n{base_resume}\n\n【目标 JD】:\n{jd_text}"
-    return call_llm(system_prompt, user_prompt)
+    return call_llm(system_prompt, user_prompt, model_name)
 
 
-def evaluate_resume(jd_text: str, drafted_resume: str, base_resume: str, channel: str = "both") -> dict:
+def evaluate_resume(jd_text: str, drafted_resume: str, base_resume: str, channel: str = "both", model_name: str = "mimo-v2.5") -> dict:
     """多路自动化评测：针对中国招聘生态的真实筛选逻辑打分"""
     
     channel_desc = {
@@ -324,7 +323,7 @@ def evaluate_resume(jd_text: str, drafted_resume: str, base_resume: str, channel
     
     user_prompt = f"【原版 JD】:\n{jd_text}\n\n【真实底库简历】:\n{base_resume}\n\n【AI 生成的定制化简历】:\n{drafted_resume}"
     
-    response = call_llm(system_prompt, user_prompt, json_mode=True)
+    response = call_llm(system_prompt, user_prompt, model_name, json_mode=True)
     import json
     try:
         result = json.loads(response)
