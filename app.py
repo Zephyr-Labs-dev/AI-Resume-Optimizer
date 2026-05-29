@@ -16,29 +16,6 @@ def load_asset_file():
 
 st.set_page_config(page_title="智能简历调优系统 - Agentic Resume", layout="wide")
 
-# 注入 CSS：在打印时隐藏所有控制台和侧边栏，实现完美的纯净 PDF 导出
-st.markdown("""
-<style>
-@media print {
-    /* 打印时隐藏不必要的界面元素 */
-    .stSidebar, header, .stButton, .stRadio, .stSelectbox, .stTextInput, .stTextArea {
-        display: none !important;
-    }
-    /* 让主内容区占据全宽，无边距 */
-    .main { 
-        margin: 0 !important; 
-        padding: 0 !important; 
-        width: 100% !important; 
-        max-width: 100% !important;
-    }
-    /* 隐藏所有提示框和评分板 */
-    [data-testid="stMetric"], .stAlert { 
-        display: none !important; 
-    }
-}
-</style>
-""", unsafe_allow_html=True)
-
 st.title("🚀 智能简历调优系统")
 st.caption("带长期记忆 × 多维自动评测 × 中国招聘生态深度适配")
 
@@ -184,11 +161,7 @@ with col2:
             st.warning(f"⚠️ 仍有缺失关键词：{', '.join(missing)}")
         
         st.markdown("---")
-        st.info("🖨️ **完美的 PDF 导出方法：** 请按下键盘上的 **`Ctrl + P`** (或 Mac 的 `Cmd + P`)，系统会自动隐藏左右侧边栏和所有按钮，为你生成排版极度纯净的 PDF 文件！")
-        
-        # 为了保证打印效果，将简历内容放在一个干净的容器里
-        with st.container():
-            st.markdown(draft)
+        st.markdown(draft)
 
     st.markdown("---")
     st.subheader("🗣️ 教导 Agent (更新长期记忆)")
